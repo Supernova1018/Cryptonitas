@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS public.usuario (
     correo_electronico VARCHAR(100) UNIQUE NOT NULL,
     contrasena VARCHAR(255) NOT NULL,
     rol_id INT NOT NULL,
+    
     -- Columna clave para el balance virtual (RF3)
     saldo_virtual_usd DECIMAL(20, 2) NOT NULL DEFAULT 100000.00,
     fecha_registro TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,

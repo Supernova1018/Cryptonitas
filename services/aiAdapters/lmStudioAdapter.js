@@ -12,7 +12,7 @@ class LMStudioAdapter {
   constructor() {
     // Usa las variables de entorno si existen, o valores por defecto
     this.apiUrl = process.env.LMSTUDIO_URL || 'http://localhost:1234/v1/chat/completions';
-    this.model = process.env.LMSTUDIO_MODEL || 'openai/gpt-oss-20b';
+    this.model = process.env.LMSTUDIO_MODEL || 'deepseek-r1-distill-qwen-1.5b';
     console.log(`🧠 LM Studio Adapter conectado a ${this.apiUrl} | Modelo: ${this.model}`);
   }
 
