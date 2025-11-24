@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CryptoIA - Dashboard</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">CI</div>
+        <div class="brand-text">
+          <div class="brand-title">CryptoIA</div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="#" class="nav-link active" data-view="consultas">📊 Dashboard</a>
+        <a href="/trade/trade.html" class="nav-link">💱 Compra/Venta</a>
+        <a href="#" class="nav-link" data-view="ia">🤖 IA</a>
+        <a href="#" class="nav-link" data-view="admin">⚙️ Admin</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <small>Proyecto • CryptoIA</small>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div class="search-bar">
+          <input id="globalSearch" type="search" placeholder="Buscar criptomonedas..." />
+        </div>
+
+        <div class="top-actions">
+          <button id="themeToggle" class="theme-btn">🌙</button>
+
+          <div class="profile">
+            <div id="userAvatar" class="avatar">U</div>
+            <div class="profile-meta">
+              <div id="userDisplayName" class="name">Usuario</div>
+              <div id="userBalance" class="small">Saldo: $0</div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- DASHBOARD -->
+      <section id="consultas" class="view active">
+
+        
+        <div class="grid-two">
+
+         <!-- PANEL PORTAFOLIO -->
+<div class="portfolio-card">
+  <div class="portfolio-header">
+    <h2>Portafolio</h2>
+
+    <div class="portfolio-summary">
+      <div>
+        <div class="summary-label">Saldo disponible</div>
+        <div id="portfolioBalance" class="summary-value">$0</div>
+      </div>
+
+      
+    </div>
+  </div>
+
+  <div id="portfolioHoldings" class="portfolio-holdings">
+    <!-- Aquí se insertará dinámicamente -->
+  </div>
+</div>
+
+</div>
+
+
+        
+         <!-- TENENCIAS ACTUALES -->
+<div class="panel">
+  <div class="panel-head">
+    <h3>Tenencias actuales</h3>
+  </div>
+
+  <div id="holdingsList" class="holdings-list">
+    <!-- Aquí se insertarán las criptomonedas -->
+  </div>
+</div>
+
+
+        </div>
+
+        <!-- HISTORIAL -->
+        <div class="panel history-panel">
+          <div class="history-header">
+            <h3>Historial completo</h3>
+            <button id="exportCsv" class="pill">Exportar CSV</button>
+          </div>
+
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>FechaHora</th>
+                <th>Tipo</th>
+                <th>Cripto</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody id="historyTable"></tbody>
+          </table>
+        </div>
+
+      </section>
+
+      <!-- COMPRA / VENTA -->
+      <section id="trade" class="view">
+
+        <div class="panel form-panel">
+          <h3>Compra / Venta de Criptomonedas</h3>
+
+          <label>Moneda</label>
+          <select id="tradeCoin"></select>
+
+          <label>Tipo</label>
+          <select id="tradeType">
+            <option value="buy">Compra</option>
+            <option value="sell">Venta</option>
+          </select>
+
+          <label>Cantidad</label>
+          <input id="tradeAmount" type="number" step="0.0001" value="0">
+
+          <label>Precio (USD)</label>
+          <input id="tradePrice" type="number" step="0.01" value="0">
+
+          <label>Total</label>
+          <div id="tradeTotal" class="total-box">$0</div>
+
+          <button id="tradeConfirm" class="btn-primary">Confirmar operación</button>
+        </div>
+
+        <div class="panel">
+          <h4>Operaciones recientes</h4>
+          <table class="simple-table" id="tradeTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Tipo</th>
+                <th>Cripto</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+      </section>
+
+      <!-- IA -->
+      <section id="ia" class="view">
+        <div class="panel">
+          <h3>IA</h3>
+          <p>Asistente IA (próximamente).</p>
+        </div>
+      </section>
+
+      <!-- ADMIN -->
+      <section id="admin" class="view">
+        <div class="panel">
+          <h3>Admin</h3>
+          <p>Panel administrativo.</p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="script-index.js"></script>
+</body>
+</html>

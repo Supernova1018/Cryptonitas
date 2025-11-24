@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CryptoIA | Login</title>
+  <link rel="stylesheet" href="login.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a2d04b1a0c.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <h1>Crypto<span>IA</span></h1>
+      <p class="subtitle">Bienvenido de nuevo 👋</p>
+      <form id="loginForm">
+        
+        <div class="input-group">
+          <label for="user"><i class="fas fa-envelope"></i></label>
+          <input type="email" id="user" placeholder="Correo electrónico" required>
+        </div>
+
+        <div class="input-group">
+          <label for="password"><i class="fas fa-lock"></i></label>
+          <input type="password" id="password" placeholder="Contraseña" required>
+        </div>
+
+        <button type="submit" class="btn-login">Iniciar Sesión</button>
+      </form>
+
+      <p class="note">¿No tienes cuenta? <a href="./register.html">Regístrate</a></p>
+
+      <div class="theme-toggle" id="toggle-theme">
+        <i class="fas fa-sun"></i>
+      </div>
+    </div>
+  </div>
+
+  <script src="login.js"></script>
+</body>
+</html>

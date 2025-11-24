@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CryptoIA | Registro</title>
+  <link rel="stylesheet" href="register.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a2d04b1a0c.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <h1>Crypto<span>IA</span></h1>
+      <p class="subtitle">Crear una nueva cuenta ✨</p>
+
+      <form id="registerForm">
+        <div class="input-group">
+          <label for="nombre"><i class="fas fa-user"></i></label>
+          <input type="text" id="nombre" placeholder="Nombre completo" required>
+        </div>
+
+        <div class="input-group">
+          <label for="correo"><i class="fas fa-envelope"></i></label>
+          <input type="email" id="correo" placeholder="Correo electrónico" required>
+        </div>
+
+        <div class="input-group">
+          <label for="password"><i class="fas fa-lock"></i></label>
+          <input type="password" id="password" placeholder="Contraseña" required>
+        </div>
+
+        <button type="submit" class="btn-login">Registrarme</button>
+      </form>
+
+      <p class="note">¿Ya tienes cuenta? <a href="login.html">Inicia sesión aquí</a></p>
+
+      <div class="theme-toggle" id="toggle-theme">
+        <i class="fas fa-sun"></i>
+      </div>
+    </div>
+  </div>
+
+  <script src="register.js"></script>
+</body>
+</html>
