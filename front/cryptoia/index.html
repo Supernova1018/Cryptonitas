@@ -25,8 +25,8 @@
       <nav class="nav">
         <a href="#" class="nav-link active" data-view="consultas">📊 Dashboard</a>
         <a href="/trade/trade.html" class="nav-link">💱 Compra/Venta</a>
-        <a href="#" class="nav-link" data-view="ia">🤖 IA</a>
-        <a href="#" class="nav-link" data-view="admin">⚙️ Admin</a>
+        <a href="ia/ia.html" class="nav-link" data-view="ia">🤖 IA</a>
+        <!-- <a href="#" class="nav-link" data-view="admin">⚙️ Admin</a> -->
       </nav>
 
       <div class="sidebar-footer">
@@ -39,12 +39,14 @@
 
       <!-- TOPBAR -->
       <header class="topbar">
-        <div class="search-bar">
-          <input id="globalSearch" type="search" placeholder="Buscar criptomonedas..." />
-        </div>
+       <div class="search-bar">
+      <input id="cryptoSearch" type="search" placeholder="Buscar criptomonedas..." />
+      <div id="searchResults" class="search-results"></div>
+      </div>
+
 
         <div class="top-actions">
-          <button id="themeToggle" class="theme-btn">🌙</button>
+          <button id="themeToggle" class="theme-btn">☀️</button>
 
           <div class="profile">
             <div id="userAvatar" class="avatar">U</div>
@@ -53,6 +55,13 @@
               <div id="userBalance" class="small">Saldo: $0</div>
             </div>
           </div>
+
+          <button id="logoutBtn" class="logout-btn">
+          <span>Salir</span>
+          🚪
+        </button>
+
+
         </div>
       </header>
 
@@ -89,7 +98,7 @@
          <!-- TENENCIAS ACTUALES -->
 <div class="panel">
   <div class="panel-head">
-    <h3>Tenencias actuales</h3>
+    <h3>Tendencias actuales</h3>
   </div>
 
   <div id="holdingsList" class="holdings-list">
@@ -104,7 +113,6 @@
         <div class="panel history-panel">
           <div class="history-header">
             <h3>Historial completo</h3>
-            <button id="exportCsv" class="pill">Exportar CSV</button>
           </div>
 
           <table class="history-table">
@@ -170,22 +178,22 @@
         </div>
 
       </section>
-
-      <!-- IA -->
-      <section id="ia" class="view">
+<!-- 
+      IA -->
+      <!-- <section id="ia" class="view">
         <div class="panel">
           <h3>IA</h3>
           <p>Asistente IA (próximamente).</p>
         </div>
-      </section>
+      </section> -->
 
       <!-- ADMIN -->
-      <section id="admin" class="view">
+      <!-- <section id="admin" class="view">
         <div class="panel">
           <h3>Admin</h3>
           <p>Panel administrativo.</p>
         </div>
-      </section>
+      </section> -->
 
     </main>
   </div>

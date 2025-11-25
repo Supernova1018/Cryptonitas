@@ -144,3 +144,37 @@ body {
 .theme-toggle:hover {
   transform: rotate(20deg);
 }
+
+/* === TOAST ADAPTADO AL DISEÑO === */
+.toast {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  padding: 14px 22px;
+  background: var(--card-bg);
+  color: var(--text-color);
+  font-size: 0.95rem;
+  border-left: 4px solid var(--primary-color);
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+  transition: all 0.35s ease;
+  z-index: 9999;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.toast.success {
+  border-left-color: var(--primary-color);
+}
+
+.toast.error {
+  border-left-color: #e53935;
+}

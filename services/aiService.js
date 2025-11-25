@@ -7,7 +7,6 @@ const LMStudioAdapter = require('./aiAdapters/lmStudioAdapter');
  */
 async function getPortafolioData(userId) {
   try {
-    // 1️⃣ Obtener saldo actual
     const saldoResult = await pool.query(
       'SELECT saldo_virtual FROM usuarios WHERE id = $1',
       [userId]
@@ -19,23 +18,20 @@ async function getPortafolioData(userId) {
 
     const saldo_usd = parseFloat(saldoResult.rows[0].saldo_virtual);
 
-    // 2️⃣ Calcular tenencias de criptomonedas basadas en transacciones
     const tenenciasResult = await pool.query(
-  `SELECT 
-     t.crypto AS simbolo,
-     c.nombre,
-     c.precio_actual,
-     SUM(CASE WHEN t.tipo = 'compra' THEN t.cantidad ELSE -t.cantidad END) AS tenencia_total
-   FROM transacciones t
-   JOIN criptomoneda c ON UPPER(t.crypto) = UPPER(c.simbolo)
-   WHERE t.user_id = $1
-   GROUP BY t.crypto, c.id_criptomoneda, c.nombre, c.simbolo, c.precio_actual
-   HAVING SUM(CASE WHEN t.tipo = 'compra' THEN t.cantidad ELSE -t.cantidad END) > 0`,
-  [userId]
-);
+      `SELECT 
+         t.crypto AS simbolo,
+         c.nombre,
+         c.precio_actual,
+         SUM(CASE WHEN t.tipo = 'compra' THEN t.cantidad ELSE -t.cantidad END) AS tenencia_total
+       FROM transacciones t
+       JOIN criptomoneda c ON UPPER(t.crypto) = UPPER(c.simbolo)
+       WHERE t.user_id = $1
+       GROUP BY t.crypto, c.id_criptomoneda, c.nombre, c.simbolo, c.precio_actual
+       HAVING SUM(CASE WHEN t.tipo = 'compra' THEN t.cantidad ELSE -t.cantidad END) > 0`,
+      [userId]
+    );
 
-
-    // 3️⃣ Calcular valores totales
     let valor_total_criptos = 0;
     const criptomonedas = tenenciasResult.rows.map(cripto => {
       const valor_actual = parseFloat(cripto.tenencia_total) * parseFloat(cripto.precio_actual);
@@ -53,13 +49,11 @@ async function getPortafolioData(userId) {
       criptomonedas,
       valor_total_portafolio: (valor_total_criptos + saldo_usd).toFixed(2)
     };
-
   } catch (err) {
     console.error("❌ Error al obtener portafolio para IA:", err);
     throw new Error('Error interno al obtener el portafolio');
   }
 }
-
 
 /**
  * Servicio de IA principal (usa LM Studio)
@@ -79,27 +73,20 @@ class AIService {
       throw new Error('No se pudo obtener el portafolio');
     }
 
-    const contextoPortafolio = JSON.stringify(portafolio, null, 2);
+    // Convertimos a una sola línea para evitar problemas de parseo
+    const portafolioStr = JSON.stringify(portafolio);
 
-    const systemPrompt = `
-      Eres "CryptoAsesor", un asistente financiero experto en criptomonedas.
-      Tu propósito es educar y asistir a un usuario en una plataforma de simulación.
-      Tus respuestas deben ser educativas, neutrales y siempre recordar al usuario que esto es una simulación.
-      Si te preguntan por tu nombre, eres "CryptoAsesor".
-    `;
+    const systemPrompt = `Eres "CryptoAsesor", un asistente financiero experto en criptomonedas. Tu propósito es educar y asistir a un usuario en una plataforma de simulación. Tus respuestas deben ser educativas, neutrales y siempre recordar al usuario que esto es una simulación. Si te preguntan por tu nombre, eres "CryptoAsesor".`;
 
-    const userPrompt = `
-      Este es mi portafolio de simulación actual:
-      ${contextoPortafolio}
-
-      Mi pregunta es:
-      "${pregunta}"
-    `;
+    const userPrompt = `Este es mi portafolio de simulación: ${portafolioStr}. Mi pregunta: "${pregunta}"`;
 
     const messages = [
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt }
     ];
+
+    // Log para depuración
+    console.log("📤 Mensajes enviados a LM Studio:", messages);
 
     return this.adapter.generarRespuesta(messages);
   }

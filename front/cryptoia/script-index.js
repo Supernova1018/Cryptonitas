@@ -22,6 +22,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
+ //CERRAR SESIÓN
+
+const logoutBtn = document.getElementById("logoutBtn");
+
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("loggedUser");
+    localStorage.removeItem("token");
+    window.location.href = "login/login.html";
+  });
+}
+
+
+
   /**************************************
    * 🧩 Mostrar datos del usuario (si existen)
    **************************************/
@@ -170,6 +184,7 @@ function renderRealPortfolio(data) {
  **************************************/
 function renderHoldings(data) {
   const { criptomonedas } = data;
+  
 
   if (!holdingsList) return;
   holdingsList.innerHTML = "";
@@ -298,17 +313,129 @@ function renderHoldings(data) {
   if (btnSell) btnSell.addEventListener("click", sellCrypto);
 
 
+   //MODO OSCURO / CLARO
+
+const themeToggle = document.getElementById("themeToggle");
+
+if (themeToggle) {
+
+  // Cargar preferencia guardada
+  if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark-mode");
+    themeToggle.textContent = "☀️"; // icono para volver a claro
+  }
+
+  themeToggle.addEventListener("click", () => {
+    const isDark = document.body.classList.toggle("dark-mode");
+
+    // Cambiar el icono
+    themeToggle.textContent = isDark ? "🌙" : "☀️";
+
+    // Guardar preferencia
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+  });
+}
+
+
+
+//HISTORIAL DE OPERACIONES
+
+const historyTable = document.getElementById("historyTable");
+
+async function loadHistory() {
+  if (!historyTable) return;
+
+  const res = await fetch("http://localhost:5000/api/trade/history", {
+    headers: { "Authorization": `Bearer ${session.token}` }
+  });
+
+  const hist = await res.json();
+
+  historyTable.innerHTML = "";
+
+  hist.forEach(row => {
+    historyTable.insertAdjacentHTML("beforeend", `
+      <tr>
+        <td>${row.id}</td>
+        <td>${row.fecha}</td>
+        <td>${row.tipo}</td>
+        <td>${row.crypto}</td>
+        <td>${row.cantidad}</td>
+        <td>$${Number(row.precio).toLocaleString()}</td>
+        <td>$${Number(row.total).toLocaleString()}</td>
+      </tr>
+    `);
+  });
+}
+
 
   /**************************************
    * 🚀 INIT
    **************************************/
   async function init() {
     const prices = await loadPrices();
+    await loadHistory();
+
 
     fillCryptoSelector(prices);
     loadRealPortafolio(); // ← YA CORREGIDO
   }
 
   init();
-
+  
 });
+
+// BÚSQUEDA DE CRIPTOS — CoinGecko
+
+const cryptoSearchInput = document.getElementById("cryptoSearch");
+const searchResults = document.getElementById("searchResults");
+
+let coinsList = [];
+
+// 1️⃣ Traer lista de criptos de CoinGecko
+async function loadCoinList() {
+  try {
+    const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=1');
+    const data = await res.json();
+    coinsList = data; // Guardamos logo, nombre, símbolo, precio
+  } catch (err) {
+    console.error('Error al cargar criptomonedas:', err);
+  }
+}
+
+// 2️⃣ Filtrar resultados mientras el usuario escribe
+cryptoSearchInput.addEventListener('input', () => {
+  const query = cryptoSearchInput.value.toLowerCase();
+  searchResults.innerHTML = '';
+
+  if (!query) return;
+
+  const filtered = coinsList.filter(c =>
+    c.name.toLowerCase().includes(query) || c.symbol.toLowerCase().includes(query)
+  ).slice(0, 10); // limitar a 10 resultados
+
+  filtered.forEach(c => {
+    const div = document.createElement('div');
+    div.innerHTML = `
+      <img src="${c.image}" alt="${c.symbol}">
+      <span>${c.name} (${c.symbol.toUpperCase()}) - $${c.current_price.toLocaleString()}</span>
+    `;
+    div.addEventListener('click', () => {
+      cryptoSearchInput.value = c.name;
+      searchResults.innerHTML = '';
+      alert(`Seleccionaste ${c.name} (${c.symbol.toUpperCase()})`);
+      // Aquí puedes agregar más lógica: mostrar gráfica, info, etc.
+    });
+    searchResults.appendChild(div);
+  });
+});
+
+// 3️⃣ Cerrar resultados al hacer click fuera
+document.addEventListener('click', e => {
+  if (!cryptoSearchInput.contains(e.target)) {
+    searchResults.innerHTML = '';
+  }
+});
+
+// 4️⃣ Llamar al cargar la página
+loadCoinList();
