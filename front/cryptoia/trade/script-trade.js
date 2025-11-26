@@ -107,57 +107,72 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
-  /**************************************
-   * 💰 Comprar
-   **************************************/
-  async function buyCrypto() {
-    const simbolo = document.getElementById("buyCoin").value;
-    const usd = Number(document.getElementById("buyAmount").value);
+  // 💰 Comprar
+async function buyCrypto() {
+  const simbolo = document.getElementById("buyCoin").value;
+  const usd = Number(document.getElementById("buyAmount").value);
 
-    if (!usd || usd <= 0) {
-      alert("Monto inválido");
-      return;
-    }
-
-    const res = await fetch("http://localhost:5000/api/trade/buy", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${session.token}`
-      },
-      body: JSON.stringify({ simbolo, cantidad_usd: usd })
+  if (!usd || usd <= 0) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Monto inválido',
+      text: 'Ingresa un monto válido para comprar.',
+      confirmButtonColor: '#4CAF50'
     });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      alert(data.msg);
-      return;
-    }
-
-    // actualizar saldo del usuario en localStorage
-    session.saldo = Number(data.nuevo_saldo_usd);
-    localStorage.setItem("loggedUser", JSON.stringify(session));
-
-    document.getElementById("userBalance").textContent =
-      `Saldo: $${session.saldo.toLocaleString()}`;
-
-    alert(`Compra exitosa de ${data.cantidad_comprada} ${simbolo}`);
+    return;
   }
 
+  const res = await fetch("http://localhost:5000/api/trade/buy", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${session.token}`
+    },
+    body: JSON.stringify({ simbolo, cantidad_usd: usd })
+  });
 
-  /**************************************
-   * 💸 Venta
-   **************************************/
-  async function sellCrypto() {
-    const simbolo = document.getElementById("sellCoin").value;
-    const amount = Number(document.getElementById("sellAmount").value);
+  const data = await res.json();
 
-    if (!amount || amount <= 0) {
-      alert("Cantidad inválida");
-      return;
-    }
+  if (!res.ok) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: data.msg || 'No se pudo realizar la compra',
+      confirmButtonColor: '#4CAF50'
+    });
+    return;
+  }
 
+  session.saldo = Number(data.nuevo_saldo_usd);
+  localStorage.setItem("loggedUser", JSON.stringify(session));
+  document.getElementById("userBalance").textContent =
+    `Saldo: $${session.saldo.toLocaleString()}`;
+
+  Swal.fire({
+    icon: 'success',
+    title: 'Compra exitosa',
+    html: `Has comprado <b>${data.cantidad_comprada} ${simbolo}</b>`,
+    confirmButtonColor: '#4CAF50',
+    timer: 3000
+  });
+}
+
+// 💸 Vender
+async function sellCrypto() {
+  const simbolo = document.getElementById("sellCoin").value;
+  const amount = Number(document.getElementById("sellAmount").value);
+
+  if (!amount || amount <= 0) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Cantidad inválida',
+      text: 'Ingresa una cantidad válida para vender.',
+      confirmButtonColor: '#4CAF50'
+    });
+    return;
+  }
+
+  try {
     const res = await fetch("http://localhost:5000/api/trade/sell", {
       method: "POST",
       headers: {
@@ -170,9 +185,47 @@ document.addEventListener("DOMContentLoaded", () => {
     const data = await res.json();
 
     if (!res.ok) {
-      alert(data.msg);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: data.msg || 'No se pudo realizar la venta',
+        confirmButtonColor: '#4CAF50'
+      });
       return;
     }
+
+    // Actualizar saldo del usuario
+    session.saldo = Number(data.nuevo_saldo_usd);
+    localStorage.setItem("loggedUser", JSON.stringify(session));
+    document.getElementById("userBalance").textContent =
+      `Saldo: $${session.saldo.toLocaleString()}`;
+
+    // Mostrar mensaje bonito de venta
+    const price = globalPrices[simbolo] || 0;
+    const totalUSD = (amount * price).toFixed(2);
+
+    Swal.fire({
+      icon: 'success',
+      title: '¡Venta realizada con éxito!',
+      html: `
+        Has vendido <b>${amount} ${simbolo}</b><br>
+        Valor total: <b>$${Number(totalUSD).toLocaleString()}</b>
+      `,
+      confirmButtonColor: '#4CAF50',
+      timer: 4000
+    });
+
+  } catch (err) {
+    console.error("❌ Error al vender:", err);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Ocurrió un problema al procesar la venta.',
+      confirmButtonColor: '#4CAF50'
+    });
+  }
+
+
 
     // actualizar saldo en localStorage
     session.saldo = Number(data.nuevo_saldo_usd);
@@ -207,4 +260,63 @@ document.addEventListener("DOMContentLoaded", () => {
     updateSellConversion();
   });
 
+  const themeToggle = document.getElementById("themeToggle");
+
+if (themeToggle) {
+
+  // Cargar preferencia guardada
+  if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark-mode");
+    themeToggle.textContent = "☀️"; // icono para volver a claro
+  }
+
+  themeToggle.addEventListener("click", () => {
+    const isDark = document.body.classList.toggle("dark-mode");
+
+    // Cambiar el icono
+    themeToggle.textContent = isDark ? "🌙" : "☀️";
+
+    // Guardar preferencia
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+  });
+}
+
+ //CERRAR SESIÓN
+
+const logoutBtn = document.getElementById("logoutBtn");
+
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("loggedUser");
+    localStorage.removeItem("token");
+    window.location.href = "/login/login.html";
+  });
+}
+
 });
+
+
+  const logged = localStorage.getItem("loggedUser");
+
+  // Si no está logueado → enviar a login
+  if (!logged) {
+    window.location.href = "../login/login.html";
+  }
+
+  const user = JSON.parse(logged);
+  const adminLink = document.getElementById("adminLink");
+
+  // Mostrar/ocultar Admin según rol
+  if (user.rol === "admin") {
+    adminLink.style.display = "block";
+  } else {
+    adminLink.style.display = "none";
+  }
+
+  // Activar link seleccionado según página actual
+  const current = window.location.pathname.split("/").pop();
+  document.querySelectorAll(".nav-link").forEach(link => {
+    if (link.href.includes(current)) {
+      link.classList.add("active");
+    }
+  });

@@ -39,7 +39,8 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     // === GUARDAR USUARIO COMPLETO DESDE BACKEND ===
     localStorage.setItem("loggedUser", JSON.stringify(data.usuario));
 
-    showToast("✅ Login exitoso");
+    showToast("Inicio de sesión exitoso ✔️", "success");
+
 
     setTimeout(() => {
       if (rolUsuario === "admin") {
@@ -56,18 +57,16 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
 });
 
 // === TOAST ===
-function showToast(message) {
-  const toast = document.createElement("div");
-  toast.classList.add("toast");
-  toast.textContent = message;
-  document.body.appendChild(toast);
+function showToast(message, type = "success") {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.className = "toast show " + type;
 
-  setTimeout(() => toast.classList.add("show"), 100);
-  setTimeout(() => {
-    toast.classList.remove("show");
-    setTimeout(() => toast.remove(), 300);
-  }, 2500);
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 3000);
 }
+
 
 // === MODO OSCURO ===
 const toggleTheme = document.getElementById("toggle-theme");

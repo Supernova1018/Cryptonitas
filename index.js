@@ -8,6 +8,7 @@ const path = require("path");
 dotenv.config();
 
 // Importar rutas
+const adminRoutes = require('./routes/admin');
 const authRoutes = require("./routes/auth");
 const cryptoRoutes = require("./routes/crypto");
 const tradeRoutes = require("./routes/trade");
@@ -19,6 +20,7 @@ const app = express();
 // --- Middlewares ---
 app.use(cors());
 app.use(express.json());
+
 
 // === SERVIR FRONTEND CORRECTO ===
 // ⚠ Ajusta esta ruta EXACTAMENTE a tu estructura real:
@@ -32,6 +34,7 @@ app.use("/api/crypto", cryptoRoutes);
 app.use("/api/trade", tradeRoutes);
 app.use("/api/portafolio", portafolioRoutes);
 app.use("/api/ai", aiRoutes);
+app.use('/api/admin', adminRoutes);
 
 
 // === MANEJO DE RUTAS DEL FRONTEND ===
@@ -47,9 +50,6 @@ app.get("/login/login.html", (req, res) => {
   res.sendFile(path.join(FRONTEND_PATH, "..", "login", "login.html"));
 });
 
-app.get("/admin/admin.html", (req, res) => {
-  res.sendFile(path.join(FRONTEND_PATH, "..", "admin", "admin.html"));
-});
 
 app.get("/trade/trade.html", (req, res) => {
   res.sendFile(path.join(FRONTEND_PATH, "trade", "trade.html"));

@@ -14,6 +14,14 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
     contrasena,
   };
 
+  // Validación de contraseña
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+if (!passwordRegex.test(contrasena)) {
+  showToast('La contraseña debe tener mínimo 8 caracteres, incluyendo mayúscula, minúscula, número y símbolo', 'error');
+  return;
+}
+
+
   try {
     const res = await fetch(API_URL, {
       method: "POST",
@@ -28,7 +36,8 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
       return;
     }
 
-    alert("Registro exitoso 🎉");
+   showToast("Inicio de sesión exitoso ✔️", "success");
+
     window.location.href = "login.html";
 
   } catch (error) {
@@ -36,6 +45,17 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
     alert("Error al conectar con el servidor");
   }
 });
+
+function showToast(message, type = "success") {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.className = "toast show " + type;
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 3000);
+}
+
 
 // --- Modo oscuro ---
 const toggle = document.getElementById("toggle-theme");

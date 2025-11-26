@@ -3,11 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>CryptoIA - Compra/Venta</title>
+  <title>CryptoIA - IA</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../style.css">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="estilo.css">
 </head>
 
 <body>
@@ -23,12 +22,12 @@
         </div>
       </div>
 
-<nav class="nav">
+     <nav class="nav">
   <a href="../index.html" class="nav-link">📊 Dashboard</a>
-  <a href="trade/trade.html" class="nav-link">💱 Compra/Venta</a>
+  <a href="../trade/trade.html" class="nav-link">💱 Compra/Venta</a>
   <a href="../ia/ia.html" class="nav-link">🤖 IA</a>
   <a id="adminLink" href="../admin/admin.html" class="nav-link">⚙️ Admin</a>
-</nav>
+    </nav>
 
 
       <div class="sidebar-footer">
@@ -41,7 +40,6 @@
 
       <!-- TOPBAR -->
       <header class="topbar">
-
         <div></div>
 
         <div class="top-actions">
@@ -62,45 +60,25 @@
         </div>
       </header>
 
-      <!-- TRADE PANEL -->
-      <section class="view active">
+      <!-- IA MODULE -->
+      <section id="ia" class="view active">
+        <div class="panel chat-panel">
+          <h3>IA Crypto Chat 🤖</h3>
 
-        <div class="panel form-panel">
-          <h3>Comprar Criptomonedas</h3>
+          <div id="chatWindow" class="chat-window">
+            <!-- Mensajes se agregarán aquí -->
+          </div>
 
-          <label>Moneda</label>
-          <select id="buyCoin"></select>
-
-          <label>Monto en USD</label>
-          <input id="buyAmount" type="number" step="0.01" value="0">
-
-          <p id="buyConversion" class="conversion-text"></p>
-
-          
-
-          <button id="btnBuy" class="btn-primary">Comprar</button>
+          <div class="chat-input-container">
+            <input id="chatInput" type="text" placeholder="Escribe tu pregunta sobre criptomonedas..." />
+            <button id="sendBtn">Enviar</button>
+          </div>
         </div>
-
-        <div class="panel form-panel">
-          <h3>Vender Criptomonedas</h3>
-
-          <label>Moneda</label>
-          <select id="sellCoin"></select>
-
-          <label>Cantidad Cripto</label>
-          <input id="sellAmount" type="number" step="0.0001" value="0">
-
-          <p id="sellConversion" class="conversion-text"></p>
-
-
-          <button id="btnSell" class="btn-primary">Vender</button>
-        </div>
-
       </section>
 
     </main>
   </div>
 
-  <script src="script-trade.js"></script>
+  <script src="scriptIA.js"></script>
 </body>
 </html>
