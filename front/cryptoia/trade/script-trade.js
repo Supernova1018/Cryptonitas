@@ -294,3 +294,29 @@ if (logoutBtn) {
 }
 
 });
+
+
+  const logged = localStorage.getItem("loggedUser");
+
+  // Si no está logueado → enviar a login
+  if (!logged) {
+    window.location.href = "../login/login.html";
+  }
+
+  const user = JSON.parse(logged);
+  const adminLink = document.getElementById("adminLink");
+
+  // Mostrar/ocultar Admin según rol
+  if (user.rol === "admin") {
+    adminLink.style.display = "block";
+  } else {
+    adminLink.style.display = "none";
+  }
+
+  // Activar link seleccionado según página actual
+  const current = window.location.pathname.split("/").pop();
+  document.querySelectorAll(".nav-link").forEach(link => {
+    if (link.href.includes(current)) {
+      link.classList.add("active");
+    }
+  });

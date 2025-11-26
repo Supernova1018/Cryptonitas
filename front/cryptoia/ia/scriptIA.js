@@ -3,8 +3,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const chatInput = document.getElementById("chatInput");
   const sendBtn = document.getElementById("sendBtn");
 
-  // Cargar historial guardado
-  const savedHistory = JSON.parse(localStorage.getItem("chatHistory") || "[]");
+  // ===============================
+  // ⚠ NUEVO: HISTORIAL POR USUARIO
+  // ===============================
+  const storedUserForHistory = JSON.parse(localStorage.getItem("loggedUser") || "{}");
+  const username = storedUserForHistory.nombre || "invitado";
+  const historyKey = `chatHistory_${username}`;
+  // ===============================
+
+  // Cargar historial guardado (YA AJUSTADO)
+  const savedHistory = JSON.parse(localStorage.getItem(historyKey) || "[]");
   savedHistory.forEach(msg => {
     const div = document.createElement("div");
     div.className = "message " + (msg.role === "user" ? "user" : "bot");
@@ -51,11 +59,14 @@ document.addEventListener("DOMContentLoaded", () => {
       botDiv.textContent = botMessage;
       chatWindow.scrollTop = chatWindow.scrollHeight;
 
-      // Guardar en historial
-      const chatHistory = JSON.parse(localStorage.getItem("chatHistory") || "[]");
+      // ===============================
+      // ⚠ NUEVO: GUARDAR HISTORIAL POR USUARIO
+      // ===============================
+      const chatHistory = JSON.parse(localStorage.getItem(historyKey) || "[]");
       chatHistory.push({ role: "user", content: userMessage });
       chatHistory.push({ role: "bot", content: botMessage });
-      localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
+      localStorage.setItem(historyKey, JSON.stringify(chatHistory));
+      // ===============================
 
     } catch (err) {
       botDiv.textContent = "Error al conectar con la IA.";
@@ -104,9 +115,42 @@ if (themeToggle) {
 const logoutBtn = document.getElementById("logoutBtn");
 if (logoutBtn) {
   logoutBtn.addEventListener("click", () => {
+
+    // ===============================
+    // ⚠ NUEVO: BORRAR SÓLO HISTORIAL DEL USUARIO ACTUAL
+    // ===============================
+    const u = JSON.parse(localStorage.getItem("loggedUser") || "{}");
+    const key = `chatHistory_${u.nombre || "invitado"}`;
+    localStorage.removeItem(key);
+    // ===============================
+
     localStorage.removeItem("loggedUser");
     localStorage.removeItem("token");
-    localStorage.removeItem("chatHistory"); // Limpiar historial al cerrar sesión
     window.location.href = "/login/login.html";
   });
 }
+
+const logged = localStorage.getItem("loggedUser");
+
+// Si no está logueado → enviar a login
+if (!logged) {
+  window.location.href = "../login/login.html";
+}
+
+const user = JSON.parse(logged);
+const adminLink = document.getElementById("adminLink");
+
+// Mostrar/ocultar Admin según rol
+if (user.rol === "admin") {
+  adminLink.style.display = "block";
+} else {
+  adminLink.style.display = "none";
+}
+
+// Activar link seleccionado según página actual
+const current = window.location.pathname.split("/").pop();
+document.querySelectorAll(".nav-link").forEach(link => {
+  if (link.href.includes(current)) {
+    link.classList.add("active");
+  }
+});

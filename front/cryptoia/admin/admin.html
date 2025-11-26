@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>CryptoIA - Compra/Venta</title>
+  <title>CryptoIA - Admin</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../style.css">
@@ -11,7 +11,6 @@
 </head>
 
 <body>
-
   <div class="app">
 
     <!-- SIDEBAR -->
@@ -25,11 +24,10 @@
 
 <nav class="nav">
   <a href="../index.html" class="nav-link">📊 Dashboard</a>
-  <a href="trade/trade.html" class="nav-link">💱 Compra/Venta</a>
+  <a href="../trade/trade.html" class="nav-link">💱 Compra/Venta</a>
   <a href="../ia/ia.html" class="nav-link">🤖 IA</a>
   <a id="adminLink" href="../admin/admin.html" class="nav-link">⚙️ Admin</a>
 </nav>
-
 
       <div class="sidebar-footer">
         <small>Proyecto • CryptoIA</small>
@@ -38,69 +36,60 @@
 
     <!-- MAIN -->
     <main class="main">
-
-      <!-- TOPBAR -->
       <header class="topbar">
-
         <div></div>
-
         <div class="top-actions">
           <button id="themeToggle" class="theme-btn">☀️</button>
 
           <div class="profile">
-            <div id="userAvatar" class="avatar">U</div>
+            <div id="userAvatar" class="avatar">A</div>
             <div class="profile-meta">
-              <div id="userDisplayName" class="name">Usuario</div>
-              <div id="userBalance" class="small">Saldo: $0</div>
+              <div id="userDisplayName" class="name">Admin</div>
+              <div id="userBalance" class="small"></div>
             </div>
           </div>
 
-           <button id="logoutBtn" class="logout-btn">
-          <span>Salir</span>
-          🚪
-        </button>
+          <button id="logoutBtn" class="logout-btn">
+            <span>Salir</span> 🚪
+          </button>
         </div>
       </header>
 
-      <!-- TRADE PANEL -->
       <section class="view active">
+        <div class="panel">
+          <h3>Administración de Usuarios</h3>
+          <button id="btnAddUser" class="btn-primary">➕ Crear Usuario</button>
 
-        <div class="panel form-panel">
-          <h3>Comprar Criptomonedas</h3>
-
-          <label>Moneda</label>
-          <select id="buyCoin"></select>
-
-          <label>Monto en USD</label>
-          <input id="buyAmount" type="number" step="0.01" value="0">
-
-          <p id="buyConversion" class="conversion-text"></p>
-
-          
-
-          <button id="btnBuy" class="btn-primary">Comprar</button>
+          <table class="simple-table" id="usersTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Rol</th>
+                <th>Saldo</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Usuarios se cargan dinámicamente -->
+            </tbody>
+          </table>
         </div>
-
-        <div class="panel form-panel">
-          <h3>Vender Criptomonedas</h3>
-
-          <label>Moneda</label>
-          <select id="sellCoin"></select>
-
-          <label>Cantidad Cripto</label>
-          <input id="sellAmount" type="number" step="0.0001" value="0">
-
-          <p id="sellConversion" class="conversion-text"></p>
-
-
-          <button id="btnSell" class="btn-primary">Vender</button>
-        </div>
-
       </section>
 
     </main>
   </div>
 
-  <script src="script-trade.js"></script>
+  <script src="admin.js"></script>
+  <script>
+  const user = JSON.parse(localStorage.getItem("loggedUser"));
+
+  if (!user || user.rol !== "admin") {
+    // No es admin → redirigir
+    window.location.href = "../index.html";
+  }
+</script>
+
 </body>
 </html>

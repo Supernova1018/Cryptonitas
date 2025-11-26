@@ -16,6 +16,15 @@ exports.registerUser = async (req, res) => {
     return res.status(400).json({ msg: 'Por favor, ingrese todos los campos' });
   }
 
+  //  Validación de contraseña
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  if (!passwordRegex.test(contrasena)) {
+    return res.status(400).json({
+      msg: 'La contraseña debe tener mínimo 8 caracteres, incluyendo mayúscula, minúscula, número y símbolo'
+    });
+  }
+
+
   try {
     const userExists = await pool.query(
       'SELECT * FROM usuarios WHERE correo = $1',

@@ -392,7 +392,7 @@ const searchResults = document.getElementById("searchResults");
 
 let coinsList = [];
 
-// 1️⃣ Traer lista de criptos de CoinGecko
+// 1️ Traer lista de criptos de CoinGecko
 async function loadCoinList() {
   try {
     const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=1');
@@ -403,7 +403,7 @@ async function loadCoinList() {
   }
 }
 
-// 2️⃣ Filtrar resultados mientras el usuario escribe
+// 2️ Filtrar resultados mientras el usuario escribe
 cryptoSearchInput.addEventListener('input', () => {
   const query = cryptoSearchInput.value.toLowerCase();
   searchResults.innerHTML = '';
@@ -420,22 +420,59 @@ cryptoSearchInput.addEventListener('input', () => {
       <img src="${c.image}" alt="${c.symbol}">
       <span>${c.name} (${c.symbol.toUpperCase()}) - $${c.current_price.toLocaleString()}</span>
     `;
-    div.addEventListener('click', () => {
-      cryptoSearchInput.value = c.name;
-      searchResults.innerHTML = '';
-      alert(`Seleccionaste ${c.name} (${c.symbol.toUpperCase()})`);
-      // Aquí puedes agregar más lógica: mostrar gráfica, info, etc.
-    });
+div.addEventListener('click', () => {
+  cryptoSearchInput.value = c.name;
+  searchResults.innerHTML = '';
+
+  showCryptoPopup(c);
+});
+function showCryptoPopup(c) {
+  const popup = document.getElementById("cryptoPopup");
+  document.getElementById("popupImg").src = c.image;
+  document.getElementById("popupTitle").textContent = `${c.name} (${c.symbol.toUpperCase()})`;
+  document.getElementById("popupPrice").textContent = `Precio: $${c.current_price.toLocaleString()}`;
+
+  popup.classList.add("show");
+
+  setTimeout(() => popup.classList.remove("show"), 3500);
+}
+
     searchResults.appendChild(div);
   });
 });
 
-// 3️⃣ Cerrar resultados al hacer click fuera
+// 3️Cerrar resultados al hacer click fuera
 document.addEventListener('click', e => {
   if (!cryptoSearchInput.contains(e.target)) {
     searchResults.innerHTML = '';
   }
 });
 
-// 4️⃣ Llamar al cargar la página
+// 4️ Llamar al cargar la página
 loadCoinList();
+
+
+  const logged = localStorage.getItem("loggedUser");
+
+  // Si no está logueado → enviar a login
+  if (!logged) {
+    window.location.href = "../login/login.html";
+  }
+
+  const user = JSON.parse(logged);
+  const adminLink = document.getElementById("adminLink");
+
+  // Mostrar/ocultar Admin según rol
+  if (user.rol === "admin") {
+    adminLink.style.display = "block";
+  } else {
+    adminLink.style.display = "none";
+  }
+
+  // Activar link seleccionado según página actual
+  const current = window.location.pathname.split("/").pop();
+  document.querySelectorAll(".nav-link").forEach(link => {
+    if (link.href.includes(current)) {
+      link.classList.add("active");
+    }
+  });

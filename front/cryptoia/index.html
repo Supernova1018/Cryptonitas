@@ -22,12 +22,13 @@
         </div>
       </div>
 
-      <nav class="nav">
-        <a href="#" class="nav-link active" data-view="consultas">📊 Dashboard</a>
-        <a href="/trade/trade.html" class="nav-link">💱 Compra/Venta</a>
-        <a href="ia/ia.html" class="nav-link" data-view="ia">🤖 IA</a>
-        <!-- <a href="#" class="nav-link" data-view="admin">⚙️ Admin</a> -->
-      </nav>
+    <nav class="nav">
+    <a href="../index.html" class="nav-link">📊 Dashboard</a>
+    <a href="../trade/trade.html" class="nav-link">💱 Compra/Venta</a>
+     <a href="../ia/ia.html" class="nav-link">🤖 IA</a>
+    <a id="adminLink" href="../admin/admin.html" class="nav-link">⚙️ Admin</a>
+    </nav>
+
 
       <div class="sidebar-footer">
         <small>Proyecto • CryptoIA</small>
@@ -197,6 +198,15 @@
 
     </main>
   </div>
+
+  <div id="cryptoPopup" class="crypto-popup">
+  <img id="popupImg" src="" alt="">
+  <div class="popup-info">
+    <h4 id="popupTitle"></h4>
+    <p id="popupPrice"></p>
+  </div>
+</div>
+
 
   <script src="script-index.js"></script>
 </body>

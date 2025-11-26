@@ -406,4 +406,65 @@ select option {
   border-radius: 50%;
 }
 
+/* Estilo moderno para el select dentro del SweetAlert */
+.swal2-container .swal2-popup .pretty-select {
+  width: 100% !important;
+  height: 40px !important;
+  padding: 8px 12px !important;
+  border-radius: 8px !important;
+  border: 1px solid #bdbdbd !important;
+  background: #fff !important;
+  font-size: 15px !important;
+  color: #222 !important;
+  appearance: none !important;
+  outline: none !important;
+}
+
+/* Flecha */
+.swal2-container .swal2-popup .pretty-select {
+  background-image: linear-gradient(45deg, transparent 50%, #666 50%),
+                    linear-gradient(135deg, #666 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%;
+  background-size: 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 36px !important;
+}
+
+/* Focus */
+.swal2-container .swal2-popup .pretty-select:focus {
+  border-color: #6a0dad !important;
+  box-shadow: 0 0 5px rgba(106, 13, 173, 0.25) !important;
+}
+
+
+
+.crypto-popup {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: var(--panel-bg, #fff);
+  color: var(--text-color, #000);
+  padding: 15px 20px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,.15);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-15px);
+  transition: all .3s ease;
+  z-index: 9999;
+}
+
+.crypto-popup img {
+  width: 40px;
+  height: 40px;
+}
+
+.crypto-popup.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
 
