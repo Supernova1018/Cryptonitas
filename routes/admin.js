@@ -8,6 +8,12 @@ const {
   updateUser,
   deleteUser
 } = require('../controllers/adminController');
+const {
+  getAllCryptos,
+  createCrypto,
+  updateCrypto,
+  deleteCrypto
+} = require('../controllers/cryptoController');
 
 // Todas requieren token + rol admin
 router.use(authMiddleware);
@@ -24,5 +30,18 @@ router.put('/users/:id', updateUser);
 
 // Eliminar usuario
 router.delete('/users/:id', deleteUser);
+
+// --- CRUD Criptomonedas (solo admin) ---
+// Listar criptos
+router.get('/cryptos', getAllCryptos);
+
+// Crear cripto
+router.post('/cryptos', createCrypto);
+
+// Editar cripto
+router.put('/cryptos/:id', updateCrypto);
+
+// Eliminar cripto
+router.delete('/cryptos/:id', deleteCrypto);
 
 module.exports = router;

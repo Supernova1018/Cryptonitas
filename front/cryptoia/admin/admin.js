@@ -1,3 +1,14 @@
+// utilidad global para escapar HTML (disponible para todos los handlers)
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const storedUser = localStorage.getItem("loggedUser");
   const token = localStorage.getItem("token");
@@ -322,15 +333,199 @@ if (!/[0-9]/.test(password)) {
     }
   }
 
-  // utility: escapar HTML simple para evitar injection en inputs
-  function escapeHtml(str) {
-    if (str === null || str === undefined) return '';
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
+  // (escapeHtml ahora es global)
+
+});
+
+// -----------------------------
+// CRUD Criptomonedas (Admin)
+// -----------------------------
+document.addEventListener('DOMContentLoaded', () => {
+  const storedUser = localStorage.getItem('loggedUser');
+  const token = localStorage.getItem('token');
+  if (!storedUser || !token) return; // ya manejado en la parte superior
+
+  const session = JSON.parse(storedUser);
+  session.token = token;
+
+  let cryptosCache = [];
+
+  async function loadCryptos() {
+    try {
+      const res = await fetch('http://localhost:5000/api/admin/cryptos', {
+        headers: { Authorization: `Bearer ${session.token}` }
+      });
+
+      const ct = res.headers.get('content-type') || '';
+      if (!res.ok || !ct.includes('application/json')) {
+        const txt = await res.text();
+        console.error('Error al cargar criptos:', res.status, txt);
+        throw new Error('Error al cargar criptos');
+      }
+
+      const list = await res.json();
+      cryptosCache = list;
+      renderCryptos(list);
+    } catch (err) {
+      console.error(err);
+    }
   }
+
+  function renderCryptos(list) {
+    const tbody = document.getElementById('cryptosTable').querySelector('tbody');
+    tbody.innerHTML = '';
+
+    list.forEach(c => {
+      tbody.insertAdjacentHTML('beforeend', `
+        <tr>
+          <td>${c.id}</td>
+          <td>${escapeHtml(c.nombre)}</td>
+          <td>${escapeHtml(c.simbolo)}</td>
+          <td>$${Number(c.precio_actual).toLocaleString()}</td>
+          <td>
+            <button class="btn-edit-crypto" data-id="${c.id}">✏️</button>
+            <button class="btn-delete-crypto" data-id="${c.id}">🗑️</button>
+          </td>
+        </tr>
+      `);
+    });
+
+    document.querySelectorAll('.btn-edit-crypto').forEach(btn => btn.addEventListener('click', () => editCrypto(btn.dataset.id)));
+    document.querySelectorAll('.btn-delete-crypto').forEach(btn => btn.addEventListener('click', () => deleteCrypto(btn.dataset.id)));
+  }
+
+  // Crear cripto
+  const addCryptoBtn = document.getElementById('btnAddCrypto');
+  if (addCryptoBtn) {
+    addCryptoBtn.addEventListener('click', async () => {
+      const { value: form } = await Swal.fire({
+        title: 'Crear Criptomoneda',
+        showCloseButton: true,
+        html:
+          '<input id="swalNombreC" class="swal2-input" placeholder="Nombre">' +
+          '<input id="swalSimboloC" class="swal2-input" placeholder="Símbolo (ej: BTC)">' +
+          '<input id="swalPrecioC" type="number" class="swal2-input" placeholder="Precio USD (opcional)">',
+        focusConfirm: false,
+        preConfirm: () => ({
+          nombre: document.getElementById('swalNombreC').value,
+          simbolo: document.getElementById('swalSimboloC').value.toUpperCase(),
+          precio_actual: Number(document.getElementById('swalPrecioC').value) || 0
+        })
+      });
+
+      if (!form) return;
+
+      if (!form.nombre || !form.simbolo) {
+        Swal.fire('Error', 'Nombre y símbolo son obligatorios', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch('http://localhost:5000/api/admin/cryptos', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.token}`
+          },
+          body: JSON.stringify(form)
+        });
+
+        const ct = res.headers.get('content-type') || '';
+        if (!res.ok || !ct.includes('application/json')) {
+          const txt = await res.text();
+          throw new Error(txt || 'Error al crear cripto');
+        }
+
+        const data = await res.json();
+        Swal.fire('✅ Criptomoneda creada', `${data.nombre} (${data.simbolo})`, 'success');
+        await loadCryptos();
+      } catch (err) {
+        console.error(err);
+        Swal.fire('Error', 'No se pudo crear la criptomoneda', 'error');
+      }
+    });
+  }
+
+  // Editar cripto
+  async function editCrypto(id) {
+    const crypto = cryptosCache.find(c => String(c.id) === String(id));
+    if (!crypto) return Swal.fire('Error', 'Criptomoneda no encontrada', 'error');
+
+    const { value: form } = await Swal.fire({
+      title: 'Editar Criptomoneda',
+      showCloseButton: true,
+      html:
+        `<input id="swalNombreC" class="swal2-input" placeholder="Nombre" value="${escapeHtml(crypto.nombre)}">` +
+        `<input id="swalSimboloC" class="swal2-input" placeholder="Símbolo" value="${escapeHtml(crypto.simbolo)}">` +
+        `<input id="swalPrecioC" type="number" class="swal2-input" placeholder="Precio USD" value="${Number(crypto.precio_actual)}">`,
+      focusConfirm: false,
+      preConfirm: () => ({
+        nombre: document.getElementById('swalNombreC').value,
+        simbolo: document.getElementById('swalSimboloC').value.toUpperCase(),
+        precio_actual: Number(document.getElementById('swalPrecioC').value) || 0
+      })
+    });
+
+    if (!form) return;
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/admin/cryptos/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.token}`
+        },
+        body: JSON.stringify(form)
+      });
+
+      const ct = res.headers.get('content-type') || '';
+      if (!res.ok || !ct.includes('application/json')) {
+        const txt = await res.text();
+        throw new Error(txt || 'Error al actualizar cripto');
+      }
+
+      Swal.fire('✅ Actualizado', '', 'success');
+      await loadCryptos();
+    } catch (err) {
+      console.error(err);
+      Swal.fire('Error', 'No se pudo actualizar la criptomoneda', 'error');
+    }
+  }
+
+  // Eliminar cripto
+  async function deleteCrypto(id) {
+    const confirm = await Swal.fire({
+      title: 'Eliminar criptomoneda?',
+      text: 'Esta acción eliminará la cripto permanentemente',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#4CAF50',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminar'
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/admin/cryptos/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${session.token}` }
+      });
+
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(txt || 'Error al eliminar');
+      }
+
+      Swal.fire('✅ Criptomoneda eliminada', '', 'success');
+      await loadCryptos();
+    } catch (err) {
+      console.error(err);
+      Swal.fire('Error', 'No se pudo eliminar la criptomoneda', 'error');
+    }
+  }
+
+  // Inicializar lista de criptos
+  loadCryptos();
 
 });

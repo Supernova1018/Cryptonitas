@@ -60,3 +60,73 @@ exports.updatePricesFromApi = async (req, res) => {
     res.status(500).send('Error del servidor al actualizar precios');
   }
 };
+
+// ADMIN: Listar todas las criptomonedas (meta: mostrar más campos)
+exports.getAllCryptos = async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT id_criptomoneda AS id, nombre, simbolo, precio_actual FROM criptomoneda ORDER BY id_criptomoneda ASC'
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error en getAllCryptos:', err.message);
+    res.status(500).json({ msg: 'Error al obtener criptomonedas' });
+  }
+};
+
+// ADMIN: Crear criptomoneda
+exports.createCrypto = async (req, res) => {
+  try {
+    const { nombre, simbolo, precio_actual } = req.body;
+    if (!nombre || !simbolo) return res.status(400).json({ msg: 'Faltan campos' });
+
+    // Verificar existencia por símbolo
+    const exists = await pool.query('SELECT id_criptomoneda FROM criptomoneda WHERE simbolo = $1', [simbolo]);
+    if (exists.rows.length > 0) return res.status(400).json({ msg: 'El símbolo ya existe' });
+
+    const price = precio_actual || 0.0;
+    const result = await pool.query(
+      'INSERT INTO criptomoneda (nombre, simbolo, precio_actual) VALUES ($1, $2, $3) RETURNING id_criptomoneda AS id, nombre, simbolo, precio_actual',
+      [nombre, simbolo, price]
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error('Error en createCrypto:', err.message);
+    res.status(500).json({ msg: 'Error al crear criptomoneda' });
+  }
+};
+
+// ADMIN: Actualizar criptomoneda
+exports.updateCrypto = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nombre, simbolo, precio_actual } = req.body;
+    if (!nombre || !simbolo) return res.status(400).json({ msg: 'Faltan campos' });
+
+    const result = await pool.query(
+      'UPDATE criptomoneda SET nombre=$1, simbolo=$2, precio_actual=$3 WHERE id_criptomoneda=$4 RETURNING id_criptomoneda AS id, nombre, simbolo, precio_actual',
+      [nombre, simbolo, precio_actual || 0.0, id]
+    );
+
+    if (result.rowCount === 0) return res.status(404).json({ msg: 'Criptomoneda no encontrada' });
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Error en updateCrypto:', err.message);
+    res.status(500).json({ msg: 'Error al actualizar criptomoneda' });
+  }
+};
+
+// ADMIN: Eliminar criptomoneda
+exports.deleteCrypto = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await pool.query('DELETE FROM criptomoneda WHERE id_criptomoneda = $1', [id]);
+    res.json({ msg: 'Criptomoneda eliminada' });
+  } catch (err) {
+    console.error('Error en deleteCrypto:', err.message);
+    res.status(500).json({ msg: 'Error al eliminar criptomoneda' });
+  }
+};
